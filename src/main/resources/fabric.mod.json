@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "intellect",
+  "version": "${version}",
+  "name": "Intellect",
+  "description": "Bring AI to Minecraft",
+  "authors": ["nikkocat"],
+  "contact": {
+    "repo": "https://github.com/nikkocat/intellect-mod"
+  },
+  "license": "MIT",
+  "icon": "assets/intellect/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "client": [
+      "nikkocat.intellect.client.IntellectClient"
+    ],
+    "main": [
+      "nikkocat.intellect.Intellect"
+    ]
+  },
+  "mixins": [
+    "intellect.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.18",
+    "fabric": "*",
+    "minecraft": "1.19.2"
+  }
+}
