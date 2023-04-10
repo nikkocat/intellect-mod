@@ -24,8 +24,8 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // OpenAI API. <api|client|service>
-    include(implementation("com.theokanning.openai-gpt3-java:service:${project.openai_java_version}"))
+    // OpenAI API
+    // include(implementation("com.theokanning.openai-gpt3-java:service:${project.openai_java_version}"))
     include(implementation("com.squareup.okhttp3:okhttp:${project.okhttp3_version}"))
 
     // Database

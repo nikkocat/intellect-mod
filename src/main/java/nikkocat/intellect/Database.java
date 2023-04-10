@@ -3,6 +3,7 @@ package nikkocat.intellect;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +31,17 @@ public class Database {
         return connection;
     }
 
+    public static void createDatabaseIfNotExist() throws IOException {
+        File database = new File("config/intellect/intellect.db");
+        if (!database.exists()) {
+            boolean created = database.createNewFile();
+            if (created) {
+                LOGGER.info("Created: config/intellect/intellect.db");
+            } else {
+                LOGGER.error("Failed to create: config/intellect/intellect.db");
+            }
+        }
+    }
     public static void createTableIfNotExist() throws SQLException {
         Statement statement = connection.createStatement();
         String createTableSQL = "CREATE TABLE IF NOT EXISTS chatlog (" +

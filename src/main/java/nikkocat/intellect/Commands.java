@@ -23,7 +23,8 @@ public class Commands {
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher,
                                         CommandRegistryAccess registryAccess,
                                         CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(literal("intellect").requires(source -> source.hasPermissionLevel(4))
+        int listEntries = Config.getMaxListEntries();
+        dispatcher.register(literal("intellect").requires(source -> source.hasPermissionLevel(Config.getPermissionLevel()))
                 .executes(ctx -> {
                     ctx.getSource().sendFeedback(Text.literal("Intellect v1.0.0"), false);
                     return 1;
@@ -39,7 +40,7 @@ public class Commands {
                 .then(literal("list")
                         .executes(ctx -> {
                             try {
-                                int entries = 19;
+                                int entries = listEntries;
                                 int pages = Database.countMessages() / entries;
                                 List<ChatMessage> messages = Database.getMessages(entries);
                                 ctx.getSource().sendFeedback(Text.literal("   Showing page: 0/" + pages), false);
@@ -55,7 +56,7 @@ public class Commands {
                                 .executes(ctx -> {
                                     try {
                                         int page = getInteger(ctx, "page");
-                                        int entries = 19;
+                                        int entries = listEntries;
                                         int pages = Database.countMessages() / entries;
                                         List<ChatMessage> messages = Database.getMessages(page * entries, entries);
                                         ctx.getSource().sendFeedback(Text.literal("   Showing page: " + getInteger(ctx, "page") + "/" + pages), false);
