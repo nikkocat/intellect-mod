@@ -12,6 +12,9 @@ import static nikkocat.intellect.Intellect.LOGGER;
 public class Config {
     private static JsonObject json = new JsonObject();
     private static String apiKey = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    private static String model = "gpt-3.5-turbo"; // gpt-4, gpt-4-0314, gpt-4-32k, gpt-4-32k-0314, gpt-3.5-turbo, gpt-3.5-turbo-0301
+    private static int queryLimit = 300; // 300 is approximately 8K content, 1200 is approximately 32K content
+    private static boolean timestamp = true;
     private static int permissionLevel = 4;
     private static int maxListEntries = 19;
 
@@ -25,8 +28,11 @@ public class Config {
             // openai object
             JsonObject openai = json.getAsJsonObject("openai");
             apiKey = openai.get("apiKey").getAsString();
+            queryLimit = openai.get("queryLimit").getAsInt();
+            model = openai.get("model").getAsString();
             // database object
             JsonObject database = json.getAsJsonObject("database");
+            timestamp = database.get("timestamp").getAsBoolean();
             // commands object
             JsonObject commands = json.getAsJsonObject("commands");
             permissionLevel = commands.get("permissionLevel").getAsInt();
@@ -65,15 +71,18 @@ public class Config {
             try {
                 // openai object
                 JsonObject openai = new JsonObject();
-                openai.addProperty("apiKey", "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                openai.addProperty("apiKey", apiKey);
+                openai.addProperty("queryLimit", queryLimit);
+                openai.addProperty("model", model);
                 json.add("openai", openai);
                 // database object
                 JsonObject database = new JsonObject();
+                database.addProperty("timestamp", timestamp);
                 json.add("database", database);
                 // commands object
                 JsonObject commands = new JsonObject();
-                commands.addProperty("permissionLevel", 4);
-                commands.addProperty("maxListEntries", 19);
+                commands.addProperty("permissionLevel", permissionLevel);
+                commands.addProperty("maxListEntries", maxListEntries);
                 json.add("commands", commands);
                 // write to file
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -93,11 +102,19 @@ public class Config {
         return apiKey;
     }
 
+    public static int getQueryLimit() {
+        return queryLimit;
+    }
+
     public static int getMaxListEntries() {
         return maxListEntries;
     }
 
     public static int getPermissionLevel() {
         return permissionLevel;
+    }
+
+    public static String getModel() {
+        return model;
     }
 }

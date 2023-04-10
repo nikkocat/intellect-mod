@@ -27,6 +27,7 @@ public class Intellect implements ModInitializer {
             Database.createDatabaseIfNotExist();
             Database.connection();
             Database.createTableIfNotExist();
+            OpenAI.initJson();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -37,6 +38,7 @@ public class Intellect implements ModInitializer {
             String content = signedMessage.getContent().getString();
             String sender = serverPlayerEntity.getName().getString();
             Database.addMessage(sender, content);
+            OpenAI.addMessage(sender, content);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
