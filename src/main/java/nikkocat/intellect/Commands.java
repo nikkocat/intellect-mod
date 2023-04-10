@@ -29,6 +29,13 @@ public class Commands {
                     ctx.getSource().sendFeedback(Text.literal("Intellect v1.0.0"), false);
                     return 1;
                 })
+                .then(literal("apikey")
+                        // get api key
+                        .executes(ctx -> {
+                            ctx.getSource().sendFeedback(Text.literal("API Key: " + Config.getApiKey()), true);
+                            return 1;
+                        })
+                )
                 .then(literal("chat")
                         .then(argument("prompt", string())
                                 .executes(ctx -> {
