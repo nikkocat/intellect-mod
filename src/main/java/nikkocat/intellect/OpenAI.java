@@ -27,7 +27,7 @@ public class OpenAI {
         json.add("messages", messages);
     }
 
-    public String post() {
+    public static String post() {
         String jsonString = json.toString();
 
         MediaType mediaType = MediaType.parse("application/json");
@@ -47,15 +47,22 @@ public class OpenAI {
         }
         return null;
     }
+    public static String debug() {
+        // return json to string with nice formatting
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(json).toString();
+    }
 
     public static void addMessage(String user, String message) {
         JsonObject messageJson = new JsonObject();
         messageJson.addProperty("role", user);
         messageJson.addProperty("content", message);
         json.getAsJsonArray("messages").add(messageJson);
-        removeMessage();
+        // if array is too big, remove the first element
+        if (json.getAsJsonArray("messages").size() > Config.getQueryLimit()) {
+            removeMessage();
+        }
     }
-
     private static void removeMessage() {
         json.getAsJsonArray("messages").remove(0);
     }
