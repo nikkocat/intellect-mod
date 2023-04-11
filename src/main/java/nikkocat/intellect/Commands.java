@@ -36,7 +36,7 @@ public class Commands {
                             return 1;
                         })
                 )
-                .then(literal("chat")
+                .then(literal("chat") // depreciated
                         .then(argument("prompt", string())
                                 .executes(ctx -> {
                                     ctx.getSource().sendFeedback(Text.literal("Sending prompt: " + getString(ctx, "prompt")), true);

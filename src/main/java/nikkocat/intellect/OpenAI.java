@@ -2,6 +2,7 @@ package nikkocat.intellect;
 
 import okhttp3.*;
 import com.google.gson.*;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -20,14 +21,20 @@ public class OpenAI {
         // query the database and add all messages to the array
         for (ChatMessage message : Database.getMessages(Config.getQueryLimit())) {
             JsonObject messageJson = new JsonObject();
-            messageJson.addProperty("role", message.getUser());
-            messageJson.addProperty("content", message.getMessage());
+            String user = message.getUser();
+            // check if user is an assistant
+            if (user.equals("gpt-model")) {
+                messageJson.addProperty("role", "assistant");
+            } else {
+                messageJson.addProperty("role", "user");
+            }
+            messageJson.addProperty("content", user + ": " + message.getMessage());
             messages.add(messageJson);
         }
         json.add("messages", messages);
     }
 
-    public static String post() {
+    public static String getResponse() {
         String jsonString = json.toString();
 
         MediaType mediaType = MediaType.parse("application/json");
@@ -40,13 +47,13 @@ public class OpenAI {
                 .build();
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
         }
         return null;
     }
+
     public static String debug() {
         // return json to string with nice formatting
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -55,14 +62,15 @@ public class OpenAI {
 
     public static void addMessage(String user, String message) {
         JsonObject messageJson = new JsonObject();
-        messageJson.addProperty("role", user);
-        messageJson.addProperty("content", message);
+        messageJson.addProperty("role", "user");
+        messageJson.addProperty("content", user + ": " + message);
         json.getAsJsonArray("messages").add(messageJson);
         // if array is too big, remove the first element
         if (json.getAsJsonArray("messages").size() > Config.getQueryLimit()) {
             removeMessage();
         }
     }
+
     private static void removeMessage() {
         json.getAsJsonArray("messages").remove(0);
     }
