@@ -19,6 +19,10 @@ import net.minecraft.text.Texts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 public class Intellect implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("Intellect");
@@ -54,10 +58,16 @@ public class Intellect implements ModInitializer {
             OpenAI.addMessage(sender, content);
             // check if message contains "@gpt"
             if (content.contains("@gpt")) {
-                String response = OpenAI.getResponse();
-                MinecraftServer server = serverPlayerEntity.getServer();
-                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                    player.sendMessageToClient(Texts.parse(server.getCommandSource(), Text.translatable(response), player, 0), false);
+                Future<String> futureResult = OpenAI.executeOnThread(() -> OpenAI.getResponse());
+                try {
+                    String response = futureResult.get(); // This will block until the response is available
+                    MinecraftServer server = serverPlayerEntity.getServer();
+                    for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                        player.sendMessageToClient(Texts.parse(server.getCommandSource(), Text.translatable(response), player, 0), false);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    LOGGER.error(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } catch (Exception e) {

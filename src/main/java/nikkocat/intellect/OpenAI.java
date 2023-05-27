@@ -5,6 +5,10 @@ import com.google.gson.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static nikkocat.intellect.Intellect.LOGGER;
 
@@ -69,6 +73,13 @@ public class OpenAI {
         if (json.getAsJsonArray("messages").size() > Config.getQueryLimit()) {
             removeMessage();
         }
+    }
+
+    public static <T> Future<T> executeOnThread(Callable<T> callable) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<T> future = executor.submit(callable);
+        executor.shutdown();
+        return future;
     }
 
     private static void removeMessage() {

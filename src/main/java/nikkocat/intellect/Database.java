@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 
 import static nikkocat.intellect.Intellect.LOGGER;
 
-// I'm not going to bother with SQL injection safety
-// That is future me's problem
+// This is a prototype, so I'm not going to bother with
+// making this class thread-safe or SQL-injection-proof.
 
 public class Database {
     private static Connection connection;
@@ -52,7 +52,6 @@ public class Database {
                 ");";
         statement.executeUpdate(createTableSQL);
     }
-
     public static int countMessages() throws SQLException {
         int count = 0;
             String countSQL = "SELECT COUNT(*) FROM chatlog";
@@ -65,12 +64,13 @@ public class Database {
     }
 
     public static void addMessage(String user, String message) throws SQLException {
-        Statement statement = connection.createStatement();
-        String insertSQL = "INSERT INTO chatlog (user, message) VALUES " +
-                "('" + user + "', '" + message + "')";
-        statement.executeUpdate(insertSQL);
+        String insertSQL = "INSERT INTO chatlog (user, message) VALUES (?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(insertSQL)) {
+            statement.setString(1, user);
+            statement.setString(2, message);
+            statement.executeUpdate();
+        }
     }
-
     public static void purgeMessages() throws SQLException {
         Statement statement = connection.createStatement();
         String deleteSQL = "DELETE FROM chatlog";
